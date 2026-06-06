@@ -12,4 +12,11 @@ export async function getSettings() {
   return out
 }
 
+export async function getPageContent(pageSlug) {
+  const { data } = await api.get(`/api/content/pages/${pageSlug}`)
+  const map = {}
+  for (const s of data.sections || []) map[s.slug] = s.content || {}
+  return map
+}
+
 export default api

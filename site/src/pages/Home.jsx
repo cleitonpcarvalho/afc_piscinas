@@ -1,19 +1,20 @@
-import HeroSection        from '../sections/HeroSection'
-import StatsSection       from '../sections/StatsSection'
-import SobreNosSection    from '../sections/SobreNosSection'
-import BeforeAfterSection from '../sections/BeforeAfterSection'
-import ServicesSection    from '../sections/ServicesSection'
-import WhyUsSection       from '../sections/WhyUsSection'
-import ProjectsSection    from '../sections/ProjectsSection'
-import CtaBannerSection   from '../sections/CtaBannerSection'
-import ProcessSection     from '../sections/ProcessSection'
+import { ContentProvider } from '../contexts/ContentContext'
+import HeroSection         from '../sections/HeroSection'
+import StatsSection        from '../sections/StatsSection'
+import SobreNosSection     from '../sections/SobreNosSection'
+import BeforeAfterSection  from '../sections/BeforeAfterSection'
+import ServicesSection     from '../sections/ServicesSection'
+import WhyUsSection        from '../sections/WhyUsSection'
+import ProjectsSection     from '../sections/ProjectsSection'
+import CtaBannerSection    from '../sections/CtaBannerSection'
+import ProcessSection      from '../sections/ProcessSection'
 import TestimonialsSection from '../sections/TestimonialsSection'
-import FaqSection         from '../sections/FaqSection'
-import BrandsSection      from '../sections/BrandsSection'
+import FaqSection          from '../sections/FaqSection'
+import BrandsSection       from '../sections/BrandsSection'
 
 export default function Home() {
   return (
-    <>
+    <ContentProvider pageSlug="inicio">
       <HeroSection />
       <StatsSection />
       <SobreNosSection />
@@ -26,6 +27,6 @@ export default function Home() {
       <TestimonialsSection />
       <FaqSection />
       <BrandsSection />
-    </>
+    </ContentProvider>
   )
 }

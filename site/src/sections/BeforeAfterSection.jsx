@@ -1,12 +1,20 @@
 import { useRef, useState, useCallback } from 'react'
 import ScrollReveal from '../components/ScrollReveal'
-import before from '../assets/pexels/before_pool.jpg'
-import after  from '../assets/pexels/after_pool.jpg'
+import beforeImg from '../assets/pexels/before_pool.jpg'
+import afterImg  from '../assets/pexels/after_pool.jpg'
+import { useSection } from '../contexts/ContentContext'
 
 export default function BeforeAfterSection() {
+  const cms = useSection('before_after')
   const [pos, setPos]       = useState(50)
   const [dragging, setDrag] = useState(false)
   const containerRef        = useRef(null)
+
+  const eyebrow    = cms.eyebrow       || 'Transformação'
+  const heading    = cms.heading       || 'Do Sonho à Realidade'
+  const subheading = cms.subheading    || 'Arraste o divisor para ver a diferença antes e depois da renovação.'
+  const imgBefore  = cms.imagem_antes  || beforeImg
+  const imgAfter   = cms.imagem_depois || afterImg
 
   const move = useCallback((clientX) => {
     if (!containerRef.current) return
@@ -18,10 +26,10 @@ export default function BeforeAfterSection() {
     <section className="py-20 bg-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-12">
-          <span className="section-eyebrow">Transformação</span>
-          <h2 className="section-title">Do Sonho à Realidade</h2>
+          <span className="section-eyebrow">{eyebrow}</span>
+          <h2 className="section-title">{heading}</h2>
           <p className="text-textmuted mt-3 max-w-xl mx-auto text-sm">
-            Arraste o divisor para ver a diferença antes e depois da renovação.
+            {subheading}
           </p>
         </ScrollReveal>
 
@@ -38,9 +46,9 @@ export default function BeforeAfterSection() {
             onTouchEnd={() => setDrag(false)}
             onTouchMove={e => move(e.touches[0].clientX)}
           >
-            <img src={after}  alt="Depois" className="absolute inset-0 w-full h-full object-cover" />
+            <img src={imgAfter}  alt="Depois" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 overflow-hidden" style={{ width: `${pos}%` }}>
-              <img src={before} alt="Antes" className="absolute inset-0 h-full object-cover"
+              <img src={imgBefore} alt="Antes" className="absolute inset-0 h-full object-cover"
                    style={{ width: containerRef.current?.offsetWidth + 'px' }} />
               <div className="absolute top-4 left-4 bg-dark/70 text-white text-xs font-bold px-3 py-1.5 rounded-full tracking-widest">ANTES</div>
             </div>

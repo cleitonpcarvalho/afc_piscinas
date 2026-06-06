@@ -2,6 +2,8 @@ import { pool } from './connection.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
+const API = process.env.PUBLIC_URL || 'http://localhost:3001'
+
 const PAGE_SECTIONS = {
   piscinas: [
     {
@@ -10,6 +12,7 @@ const PAGE_SECTIONS = {
         eyebrow: 'DESDE BETÃO A FIBRA TEMOS TODOS OS',
         heading: 'Tipos de Piscina',
         subheading: 'Construímos todo o tipo de piscinas — desde betão armado a fibra de vidro.',
+        bg_image: `${API}/uploads/img_02_46-768x576.jpg`,
       },
     },
     {
@@ -71,6 +74,7 @@ const PAGE_SECTIONS = {
         eyebrow: 'CONSTRUÍMOS QUALQUER TIPO DE',
         heading: 'Saunas',
         subheading: 'O limite será a sua imaginação.',
+        bg_image: `${API}/uploads/img_02_sauna2-768x576.jpg`,
       },
     },
     {
@@ -104,6 +108,7 @@ const PAGE_SECTIONS = {
         eyebrow: 'RELAXE, DESCONTRAIA E REVITALIZE',
         heading: 'Faça do banho turco uma rotina',
         subheading: 'Terapia ancestral para o bem-estar do corpo e da mente.',
+        bg_image: `${API}/uploads/img_02_turco1.jpg`,
       },
     },
     {
@@ -137,6 +142,7 @@ const PAGE_SECTIONS = {
         eyebrow: 'ALIVIE O STRESS DO DIA-A-DIA COM OS',
         heading: 'Nossos Spas',
         subheading: 'Banheiras de hidromassagem e spas de luxo para o seu estilo de vida.',
+        bg_image: `${API}/uploads/img_02_spas-0039-spa3-768x768.jpg`,
       },
     },
     {
@@ -170,6 +176,7 @@ const PAGE_SECTIONS = {
         eyebrow: 'CONHEÇA TODOS OS NOSSOS',
         heading: 'Complementos',
         subheading: 'Equipamentos e acessórios para maximizar o conforto e segurança da sua piscina.',
+        bg_image: `${API}/uploads/img_02_entrada-telescopicas.jpg`,
       },
     },
     {
@@ -177,6 +184,7 @@ const PAGE_SECTIONS = {
       content: {
         heading: 'Piscinas Cobertas',
         text: 'O ambiente ideal, todo o ano! As coberturas exercem um papel muito importante na manutenção e preservação de limpeza na sua piscina, e em alguns modelos são bastante seguras, pois através deste método a piscina não fica exposta a eventuais visitas sem vigilância das suas crianças ou dos seus animais.',
+        bg_image: `${API}/uploads/img_02_entrada-telescopicas.jpg`,
       },
     },
     {
@@ -184,6 +192,7 @@ const PAGE_SECTIONS = {
       content: {
         heading: 'Coberturas Telescópicas',
         text: 'Altamente competitivas, pela sua qualidade, garantia e versatilidade. A ampla diversidade dos modelos existentes é a mais adequada às necessidades e estética do seu jardim.',
+        bg_image: `${API}/uploads/img_03_coberturas-telescopicas-02-768x576.jpg`,
       },
     },
     {
@@ -191,6 +200,7 @@ const PAGE_SECTIONS = {
       content: {
         heading: 'Aquecimento',
         text: 'A sua água sempre à temperatura desejada. O ambiente ideal, todo o ano! Bombas de Calor, Caldeira, Resistência.',
+        bg_image: `${API}/uploads/img_12_aquecimento.jpg`,
       },
     },
     {

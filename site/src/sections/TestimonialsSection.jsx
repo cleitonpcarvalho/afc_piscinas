@@ -2,11 +2,12 @@ import ScrollReveal from '../components/ScrollReveal'
 import t1 from '../assets/pexels/testimonial_1.jpg'
 import t2 from '../assets/pexels/testimonial_2.jpg'
 import t3 from '../assets/pexels/testimonial_3.jpg'
+import { useSection } from '../contexts/ContentContext'
 
-const TESTIMONIALS = [
-  { name: 'Carlos Ferreira', location: 'Porto',   photo: t1, text: 'Excelente equipa! Construíram a nossa piscina em tempo recorde e com qualidade impressionante. Muito profissionais e transparentes no orçamento.' },
-  { name: 'Ana Rodrigues',   location: 'Lisboa',  photo: t2, text: 'Renovámos a nossa piscina antiga com a AFC e ficou completamente nova. O acompanhamento foi constante e o resultado superou as expectativas.' },
-  { name: 'João Martins',    location: 'Braga',   photo: t3, text: 'Serviço 5 estrelas. Instalámos uma sauna finlandesa e um spa. Equipa incansável e acabamento de alta qualidade. Recomendo vivamente!' },
+const FALLBACK = [
+  { name: 'Carlos Ferreira', location: 'Porto',  photo: t1, text: 'Excelente equipa! Construíram a nossa piscina em tempo recorde e com qualidade impressionante. Muito profissionais e transparentes no orçamento.' },
+  { name: 'Ana Rodrigues',   location: 'Lisboa', photo: t2, text: 'Renovámos a nossa piscina antiga com a AFC e ficou completamente nova. O acompanhamento foi constante e o resultado superou as expectativas.' },
+  { name: 'João Martins',    location: 'Braga',  photo: t3, text: 'Serviço 5 estrelas. Instalámos uma sauna finlandesa e um spa. Equipa incansável e acabamento de alta qualidade. Recomendo vivamente!' },
 ]
 
 function Stars() {
@@ -33,16 +34,28 @@ function GoogleIcon() {
 }
 
 export default function TestimonialsSection() {
+  const cms = useSection('testimonials')
+
+  const eyebrow = cms.eyebrow || 'Testemunhos'
+  const heading = cms.heading || 'O que Dizem os Nossos Clientes'
+
+  const testimonials = FALLBACK.map((fb, i) => ({
+    name:     cms[`nome_${i + 1}`]  || fb.name,
+    location: cms[`local_${i + 1}`] || fb.location,
+    text:     cms[`texto_${i + 1}`] || fb.text,
+    photo:    cms[`foto_${i + 1}`]  || fb.photo,
+  }))
+
   return (
     <section className="py-20 bg-surface">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-14">
-          <span className="section-eyebrow">Testemunhos</span>
-          <h2 className="section-title">O que Dizem os Nossos Clientes</h2>
+          <span className="section-eyebrow">{eyebrow}</span>
+          <h2 className="section-title">{heading}</h2>
         </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t, i) => (
+          {testimonials.map((t, i) => (
             <ScrollReveal key={t.name} delay={i * 100}>
               <div className="card-light p-6 h-full flex flex-col hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">

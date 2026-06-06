@@ -13,14 +13,17 @@ const PAGE_LABELS = {
   contactos:    'Contactos',
 }
 
-function safeVal(v) {
-  if (v === null || v === undefined) return ''
-  if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') return String(v)
-  return JSON.stringify(v)
-}
-
-function isValidUrl(val) {
-  return val && typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://'))
+function isImageField(key, value) {
+  const v = String(value || '')
+  if (v.includes('/uploads/') || v.includes('localhost:3001')) return true
+  const k = key.toLowerCase()
+  return (
+    k.startsWith('imagem') ||
+    k.startsWith('foto') ||
+    k === 'bg_image' ||
+    k.endsWith('_image') ||
+    k.endsWith('_img')
+  )
 }
 
 function SectionCard({ section, onSaved }) {
@@ -28,15 +31,12 @@ function SectionCard({ section, onSaved }) {
   const [title,  setTitle]  = useState(section.title || '')
   const [saving, setSaving] = useState(false)
   const [msg,    setMsg]    = useState('')
-  const [picker, setPicker] = useState(null) // key do campo imagem a substituir
+  const [picker, setPicker] = useState(null) // key do campo a substituir
 
   async function save() {
     setSaving(true)
     try {
-      await api.put(`/api/content/sections/${section.id}`, {
-        title,
-        content: fields,
-      })
+      await api.put(`/api/content/sections/${section.id}`, { title, content: fields })
       setMsg('Guardado!')
       onSaved?.()
     } catch {
@@ -59,12 +59,101 @@ function SectionCard({ section, onSaved }) {
   let entries = []
   try { entries = Object.entries(fields || {}) } catch { entries = [] }
 
+  function renderField(key, value) {
+    // Arrays e objectos são estruturais
+    if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+      return (
+        <div key={key}>
+          <p style={{ color: '#64748b', fontSize: '11px', fontStyle: 'italic' }}>
+            {key.replace(/_/g, ' ')} — campo estrutural gerido automaticamente.
+          </p>
+        </div>
+      )
+    }
+
+    const strVal = String(value ?? '')
+
+    // Campo de imagem — thumbnail + botão Substituir
+    if (isImageField(key, strVal)) {
+      const hasUrl = strVal.includes('/uploads/')
+      return (
+        <div key={key} className="space-y-2">
+          <label className="block text-muted text-xs capitalize">{key.replace(/_/g, ' ')}</label>
+
+          {/* Thumbnail */}
+          <div className="w-[200px] h-[130px] rounded-xl overflow-hidden border border-border bg-bg flex items-center justify-center">
+            {hasUrl
+              ? <img
+                  src={strVal}
+                  alt={key}
+                  className="w-full h-full object-cover"
+                  onError={e => { e.currentTarget.style.display = 'none' }}
+                />
+              : <div className="flex flex-col items-center gap-1 text-muted">
+                  <ImageIcon size={22} />
+                  <span className="text-[10px]">Sem imagem</span>
+                </div>
+            }
+          </div>
+
+          {/* Nome do ficheiro */}
+          {hasUrl && (
+            <p className="text-[10px] text-muted truncate max-w-[160px]">
+              {strVal.split('/').pop()}
+            </p>
+          )}
+
+          {/* Botão substituir */}
+          <button
+            onClick={() => setPicker(key)}
+            className="btn-ghost text-xs flex items-center gap-1.5"
+          >
+            <ImageIcon size={12} />
+            {hasUrl ? 'Substituir Imagem' : 'Seleccionar Imagem'}
+          </button>
+        </div>
+      )
+    }
+
+    // Ocultar URLs externas (wa.me, http sem /uploads/, caminhos relativos)
+    if (
+      strVal.startsWith('http') ||
+      strVal.startsWith('../') ||
+      strVal.includes('/assets/') ||
+      strVal.includes('wa.me')
+    ) {
+      return null
+    }
+
+    // Campo de texto simples
+    const isLong = strVal.length > 80
+    return (
+      <div key={key}>
+        <label className="block text-muted text-xs mb-1 capitalize">{key.replace(/_/g, ' ')}</label>
+        {isLong
+          ? <textarea
+              className="input resize-y"
+              rows={3}
+              value={strVal}
+              onChange={e => setField(key, e.target.value)}
+            />
+          : <input
+              className="input"
+              value={strVal}
+              onChange={e => setField(key, e.target.value)}
+            />
+        }
+      </div>
+    )
+  }
+
+  const visibleFields = entries.map(([key, value]) => renderField(key, value)).filter(Boolean)
+  if (visibleFields.length === 0) return null
+
   return (
     <div className="card space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-text font-semibold text-sm">
-          {title || section.slug}
-        </h3>
+        <h3 className="text-text font-semibold text-sm">{title || section.slug}</h3>
         <div className="flex items-center gap-2">
           {msg && <span className="text-xs text-accent">{msg}</span>}
           <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
@@ -73,84 +162,12 @@ function SectionCard({ section, onSaved }) {
         </div>
       </div>
 
-      {/* Title field */}
       <div>
         <label className="block text-muted text-xs mb-1">Título da secção</label>
-        <input
-          className="input"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-        />
+        <input className="input" value={title} onChange={e => setTitle(e.target.value)} />
       </div>
 
-      {/* Content fields */}
-      {entries.length === 0 && (
-        <p className="text-muted text-xs">Esta secção ainda não tem campos de conteúdo definidos.</p>
-      )}
-
-      {entries.map(([key, value]) => {
-        const isImage = key.toLowerCase().includes('image') ||
-                        key.toLowerCase().includes('imagem') ||
-                        key.toLowerCase().includes('foto') ||
-                        key.toLowerCase().includes('bg') ||
-                        isValidUrl(value)
-
-        if (isImage) {
-          return (
-            <div key={key}>
-              <label className="block text-muted text-xs mb-1 capitalize">{key.replace(/_/g, ' ')}</label>
-              <div className="flex gap-3 items-start">
-                <div className="w-24 h-20 rounded-lg border border-border bg-bg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  {isValidUrl(value)
-                    ? <img
-                        src={safeVal(value)}
-                        alt={key}
-                        className="w-full h-full object-cover"
-                        onError={e => { e.target.style.display = 'none' }}
-                      />
-                    : <ImageIcon size={20} className="text-muted" />
-                  }
-                </div>
-                <div className="flex-1 space-y-2">
-                  <input
-                    className="input text-xs"
-                    value={safeVal(value)}
-                    onChange={e => setField(key, e.target.value)}
-                    placeholder="URL da imagem"
-                  />
-                  <button
-                    onClick={() => setPicker(key)}
-                    className="btn-ghost text-xs flex items-center gap-1.5"
-                  >
-                    <ImageIcon size={12} /> Substituir Imagem
-                  </button>
-                </div>
-              </div>
-            </div>
-          )
-        }
-
-        const displayVal = safeVal(value)
-        const isLong = displayVal.length > 80
-        return (
-          <div key={key}>
-            <label className="block text-muted text-xs mb-1 capitalize">{key.replace(/_/g, ' ')}</label>
-            {isLong
-              ? <textarea
-                  className="input resize-y"
-                  rows={3}
-                  value={displayVal}
-                  onChange={e => setField(key, e.target.value)}
-                />
-              : <input
-                  className="input"
-                  value={displayVal}
-                  onChange={e => setField(key, e.target.value)}
-                />
-            }
-          </div>
-        )
-      })}
+      {visibleFields}
 
       {picker && (
         <MediaPicker
@@ -163,10 +180,10 @@ function SectionCard({ section, onSaved }) {
 }
 
 export default function Content() {
-  const [pages,       setPages]       = useState([])
-  const [activePage,  setActivePage]  = useState(null)
-  const [sections,    setSections]    = useState([])
-  const [loading,     setLoading]     = useState(false)
+  const [pages,      setPages]      = useState([])
+  const [activePage, setActivePage] = useState(null)
+  const [sections,   setSections]   = useState([])
+  const [loading,    setLoading]    = useState(false)
 
   useEffect(() => {
     api.get('/api/content/pages').then(r => {
@@ -186,7 +203,6 @@ export default function Content() {
 
   return (
     <div className="flex gap-5 h-full">
-      {/* Page list */}
       <aside className="w-52 flex-shrink-0">
         <h2 className="text-muted text-xs font-medium uppercase tracking-wider mb-3">Páginas</h2>
         <div className="space-y-1">
@@ -206,8 +222,7 @@ export default function Content() {
         </div>
       </aside>
 
-      {/* Sections */}
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto">
         {loading && <p className="text-muted text-sm">A carregar secções…</p>}
 
         {!loading && sections.length === 0 && (
@@ -217,11 +232,7 @@ export default function Content() {
         )}
 
         {!loading && sections.map(s => (
-          <SectionCard
-            key={s.id}
-            section={s}
-            onSaved={() => {}}
-          />
+          <SectionCard key={s.id} section={s} onSaved={() => {}} />
         ))}
       </div>
     </div>

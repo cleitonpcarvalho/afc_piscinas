@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
 import ScrollReveal from '../components/ScrollReveal'
+import { useSection } from '../contexts/ContentContext'
 
 import imgPiscina     from '../assets/client/piscinas/img_02_46-768x576.jpg'
 import imgSauna       from '../assets/client/saunas/img_02_sauna2-768x576.jpg'
@@ -12,44 +12,55 @@ import imgManutencao  from '../assets/client/piscinas/img_10_38-1-768x576.jpg'
 
 const WA = 'https://wa.me/351967335707?text=Ol%C3%A1%2C+gostaria+de+pedir+um+or%C3%A7amento'
 
-const TABS = [
-  { id: 'piscinas', label: 'Piscinas', img: imgPiscina,
+const TABS_STATIC = [
+  { id: 'piscinas',     label: 'Piscinas',    fallbackImg: imgPiscina,
     desc: 'Construção e renovação de piscinas de betão, poliéster e inox, personalizadas ao gosto do cliente.',
     bullets: ['Piscinas de betão armado', 'Piscinas de poliéster', 'Piscinas de painéis de aço', 'Renovação completa'] },
-  { id: 'saunas', label: 'Saunas', img: imgSauna,
+  { id: 'saunas',       label: 'Saunas',      fallbackImg: imgSauna,
     desc: 'Saunas finlandesas com design exclusivo, materiais premium e instalação profissional.',
     bullets: ['Saunas finlandesas secas', 'Cabines de infravermelhos', 'Acessórios e pedras vulcânicas', 'Instalação e manutenção'] },
-  { id: 'turcos', label: 'Turcos', img: imgTurco,
+  { id: 'turcos',       label: 'Turcos',      fallbackImg: imgTurco,
     desc: 'Banhos turcos (hammam) com materiais resistentes e sistemas de vapor eficientes.',
     bullets: ['Hammam tradicional', 'Geradores de vapor', 'Revestimentos cerâmicos', 'Aromaterapia integrada'] },
-  { id: 'spas', label: 'Spas', img: imgSpa,
+  { id: 'spas',         label: 'Spas',        fallbackImg: imgSpa,
     desc: 'Spas e jacuzzis de exterior e interior com massagem por jatos e aquecimento eficiente.',
     bullets: ['Spas de exterior premium', 'Spas de interior', 'Sistemas de hidromassagem', 'Aquecimento e filtragem'] },
-  { id: 'complementos', label: 'Complementos', img: imgComplemento,
+  { id: 'complementos', label: 'Complementos', fallbackImg: imgComplemento,
     desc: 'Coberturas telescópicas, aquecimento solar, iluminação e equipamentos de filtragem.',
     bullets: ['Coberturas telescópicas', 'Painéis solares térmicos', 'Iluminação LED subaquática', 'Robôs de limpeza'] },
-  { id: 'manutencao', label: 'Manutenção', img: imgManutencao,
+  { id: 'manutencao',   label: 'Manutenção',  fallbackImg: imgManutencao,
     desc: 'Manutenção periódica, tratamento de água, limpeza e assistência técnica especializada.',
     bullets: ['Tratamento de água', 'Limpeza periódica', 'Reparações e assistência', 'Contratos anuais'] },
 ]
 
 export default function ServicesSection() {
+  const cms    = useSection('services')
   const [active, setActive] = useState('piscinas')
-  const tab = TABS.find(t => t.id === active) || TABS[0]
+
+  const eyebrow    = cms.eyebrow    || 'O que fazemos'
+  const heading    = cms.heading    || 'Os Nossos Serviços'
+  const subheading = cms.subheading || 'Do projeto à entrega, cobrimos todas as fases com a mesma dedicação e rigor.'
+
+  const tabs = TABS_STATIC.map(t => ({
+    ...t,
+    img: cms[`imagem_${t.id}`] || t.fallbackImg,
+  }))
+
+  const tab = tabs.find(t => t.id === active) || tabs[0]
 
   return (
     <section className="py-20 bg-surface">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-12">
-          <span className="section-eyebrow">O que fazemos</span>
-          <h2 className="section-title">Os Nossos Serviços</h2>
+          <span className="section-eyebrow">{eyebrow}</span>
+          <h2 className="section-title">{heading}</h2>
           <p className="text-textmuted mt-3 max-w-xl mx-auto text-sm">
-            Do projeto à entrega, cobrimos todas as fases com a mesma dedicação e rigor.
+            {subheading}
           </p>
         </ScrollReveal>
 
         <div className="flex flex-wrap gap-2 justify-center mb-10">
-          {TABS.map(t => (
+          {tabs.map(t => (
             <button key={t.id} onClick={() => setActive(t.id)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all cursor-pointer
                 ${active === t.id

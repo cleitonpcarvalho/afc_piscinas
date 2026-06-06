@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import ScrollReveal from '../components/ScrollReveal'
+import { useSection } from '../contexts/ContentContext'
 
-const FAQS = [
+const FALLBACK_FAQS = [
   { q: 'Que tipos de piscinas a AFC Piscinas constrói?',
     a: 'Construímos piscinas de betão armado (gunite), poliéster, painéis de aço e polímeros, tanto residenciais como comerciais. Cada projecto é desenvolvido de acordo com as necessidades e espaço do cliente.' },
   { q: 'Quanto tempo demora a construção de uma piscina?',
@@ -30,17 +31,26 @@ function Item({ faq, open, toggle }) {
 }
 
 export default function FaqSection() {
+  const cms = useSection('faq')
   const [openIdx, setOpenIdx] = useState(0)
+
+  const eyebrow = cms.eyebrow || 'FAQ'
+  const heading = cms.heading || 'Perguntas Frequentes'
+
+  const faqs = FALLBACK_FAQS.map((fb, i) => ({
+    q: cms[`pergunta_${i + 1}`] || fb.q,
+    a: cms[`resposta_${i + 1}`] || fb.a,
+  }))
 
   return (
     <section className="py-20 bg-primary">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-12">
-          <span className="section-eyebrow">FAQ</span>
-          <h2 className="section-title">Perguntas Frequentes</h2>
+          <span className="section-eyebrow">{eyebrow}</span>
+          <h2 className="section-title">{heading}</h2>
         </ScrollReveal>
         <div className="space-y-3">
-          {FAQS.map((faq, i) => (
+          {faqs.map((faq, i) => (
             <ScrollReveal key={i} delay={i * 60}>
               <Item faq={faq} open={openIdx === i} toggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
             </ScrollReveal>

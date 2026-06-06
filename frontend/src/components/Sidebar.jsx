@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, FileText, Image, Settings, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import afcLogo from '../assets/afc_logo.png'
 
 const NAV = [
   { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -22,8 +23,8 @@ export default function Sidebar() {
     <aside className="w-60 min-h-screen bg-surface border-r border-border flex flex-col flex-shrink-0">
       {/* Logo */}
       <div className="px-5 py-6 border-b border-border">
-        <p className="text-text font-bold text-base leading-tight">AFC Piscinas</p>
-        <p className="text-muted text-xs mt-0.5">Painel Admin</p>
+        <img src={afcLogo} alt="AFC Piscinas" style={{ height: '36px', width: 'auto', marginBottom: '4px' }} />
+        <p className="text-muted text-xs">Painel Admin</p>
       </div>
 
       {/* Nav */}
