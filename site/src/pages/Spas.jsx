@@ -1,14 +1,52 @@
 import PageHero    from '../components/PageHero'
-import GalleryGrid from '../components/GalleryGrid'
 import PageCTA     from '../components/PageCTA'
 import ScrollReveal from '../components/ScrollReveal'
+import ImageGroup  from '../components/ImageGroup'
 
-const allImages = import.meta.glob(
+const allMods = import.meta.glob(
   '../assets/client/spas/img_*[0-9][0-9]_*.{jpg,jpeg,png}',
   { eager: true }
 )
-const images = Object.values(allImages).map(m => m.default).filter(s => !s.includes('logo'))
-const heroBg = images[0]
+
+const entries = Object.entries(allMods)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([path, mod]) => {
+    const n = parseInt(path.match(/img_(\d+)_/)?.[1] ?? 0)
+    return { n, src: mod.default }
+  })
+  .filter(e => !e.src.includes('logo'))
+
+const byRange = (from, to) =>
+  entries.filter(e => e.n >= from && e.n <= to).map(e => e.src)
+
+const heroBg   = entries[0]?.src
+const introImg = entries[0]?.src
+
+// 41 imagens (img_02–img_42) distribuídas em 3 grupos sequenciais
+const exteriorImgs = byRange(2, 15)
+const interiorImgs = byRange(16, 29)
+const jacuzziImgs  = byRange(30, 42)
+
+const SECOES = [
+  {
+    title: 'Spas de Exterior',
+    text: 'Projectados para resistir às condições climatéricas, com isolamento térmico de alta eficiência e acabamentos premium. Desfrute da hidroterapia ao ar livre em qualquer estação do ano.',
+    images: exteriorImgs,
+    bg: 'bg-white',
+  },
+  {
+    title: 'Spas de Interior',
+    text: 'Integração perfeita em casa de banho, suite ou zona de lazer interior, com múltiplos sistemas de massagem. O spa do hotel, na comodidade da sua casa.',
+    images: interiorImgs,
+    bg: 'bg-surface2',
+  },
+  {
+    title: 'Banheiras Jacuzzi',
+    text: 'Da banheira íntima para dois ao grande spa para festas — temos o modelo para acomodar as suas necessidades e orçamento. Selecção de jacuzzis das melhores marcas mundiais.',
+    images: jacuzziImgs,
+    bg: 'bg-white',
+  },
+]
 
 export default function Spas() {
   return (
@@ -20,9 +58,10 @@ export default function Spas() {
         bgImage={heroBg}
       />
 
-      <section className="py-16 bg-white">
+      {/* Intro — texto esquerda, imagem direita */}
+      <section className="py-16 bg-surface2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <ScrollReveal>
               <p className="section-eyebrow">Home Resort</p>
               <h2 className="section-title mb-4">Um Santuário Privado</h2>
@@ -40,50 +79,32 @@ export default function Spas() {
               </p>
             </ScrollReveal>
             <ScrollReveal delay={150}>
-              <div className="rounded-2xl overflow-hidden">
-                <img src={images[1] || heroBg} alt="Spa" className="w-full h-72 object-cover" />
-              </div>
+              {introImg && (
+                <div className="rounded-xl overflow-hidden">
+                  <img src={introImg} alt="Spa AFC Piscinas" className="w-full h-72 object-cover" />
+                </div>
+              )}
             </ScrollReveal>
           </div>
+        </div>
+      </section>
 
-          {/* Objectivo */}
-          <ScrollReveal>
-            <div className="bg-surface2 border border-borderlight rounded-2xl p-8 mb-8">
-              <h3 className="text-accent font-semibold text-lg mb-3">Nosso Objectivo</h3>
-              <p className="text-textmuted leading-relaxed">
-                Criar uma constante fonte de entretenimento, que poderá desfrutar com a sua família, ouvir música,
-                assistir aos seus programas de televisão favoritos, ou compartilhar a companhia um do outro, no lugar
-                mais relaxante do mundo: a sua casa.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { title: 'Spas de Exterior', text: 'Projectados para resistir às condições climatéricas, com isolamento térmico de alta eficiência e acabamentos premium.' },
-              { title: 'Spas de Interior', text: 'Integração perfeita em casa de banho, suite ou zona de lazer interior, com múltiplos sistemas de massagem.' },
-              { title: 'Banheiras Jacuzzi', text: 'Da banheira íntima para dois ao grande spa para festas — temos o modelo para acomodar as suas necessidades e orçamento.' },
-            ].map((c, i) => (
-              <ScrollReveal key={c.title} delay={i * 80}>
-                <div className="bg-white border border-borderlight rounded-2xl shadow-sm p-6 h-full">
-                  <h3 className="text-accent font-semibold mb-2">{c.title}</h3>
-                  <p className="text-textmuted text-sm leading-relaxed">{c.text}</p>
-                </div>
+      {/* 3 secções com ImageGroup */}
+      {SECOES.map((s) => (
+        <section key={s.title} className={`py-16 ${s.bg}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollReveal className="mb-8">
+              <h2 className="section-title">{s.title}</h2>
+              <p className="text-textmuted leading-relaxed max-w-3xl mt-4">{s.text}</p>
+            </ScrollReveal>
+            {s.images.length > 0 && (
+              <ScrollReveal delay={80}>
+                <ImageGroup images={s.images} title={s.title} />
               </ScrollReveal>
-            ))}
+            )}
           </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-surface2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal className="mb-10">
-            <p className="section-eyebrow">Portfólio</p>
-            <h2 className="section-title">Galeria de Spas</h2>
-          </ScrollReveal>
-          <GalleryGrid images={images} />
-        </div>
-      </section>
+        </section>
+      ))}
 
       <PageCTA
         text="Quer o spa dos seus sonhos? Peça o seu orçamento gratuito."

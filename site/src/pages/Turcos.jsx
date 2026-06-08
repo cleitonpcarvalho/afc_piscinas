@@ -1,14 +1,26 @@
-import PageHero    from '../components/PageHero'
-import GalleryGrid from '../components/GalleryGrid'
-import PageCTA     from '../components/PageCTA'
+import PageHero  from '../components/PageHero'
+import PageCTA   from '../components/PageCTA'
 import ScrollReveal from '../components/ScrollReveal'
 
-const allImages = import.meta.glob(
+const allMods = import.meta.glob(
   '../assets/client/turcos/img_*[0-9][0-9]_*.{jpg,jpeg,png}',
   { eager: true }
 )
-const images = Object.values(allImages).map(m => m.default).filter(s => !s.includes('logo'))
-const heroBg = images[0]
+
+const entries = Object.entries(allMods)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([path, mod]) => {
+    const n = parseInt(path.match(/img_(\d+)_/)?.[1] ?? 0)
+    return { n, src: mod.default }
+  })
+  .filter(e => !e.src.includes('logo'))
+
+const byN = (n) => entries.find(e => e.n === n)?.src
+
+const heroBg = entries[0]?.src
+const img1   = byN(2)
+const img2   = byN(3)
+const img3   = byN(4)
 
 export default function Turcos() {
   return (
@@ -20,9 +32,10 @@ export default function Turcos() {
         bgImage={heroBg}
       />
 
+      {/* Intro — texto esquerda, imagem direita */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <ScrollReveal>
               <p className="section-eyebrow">Terapia ancestral</p>
               <h2 className="section-title mb-4">O Banho Turco</h2>
@@ -42,11 +55,30 @@ export default function Turcos() {
             </ScrollReveal>
 
             <ScrollReveal delay={150}>
-              <div className="rounded-2xl overflow-hidden mb-5">
-                <img src={images[1] || heroBg} alt="Banho Turco" className="w-full h-80 object-cover" />
-              </div>
-              <div className="bg-surface2 border border-borderlight rounded-2xl p-5">
-                <h3 className="text-textprimary font-semibold mb-2">Turco vs Sauna</h3>
+              {img1 && (
+                <div className="rounded-xl overflow-hidden">
+                  <img src={img1} alt="Banho Turco" className="w-full h-80 object-cover" />
+                </div>
+              )}
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Galeria + Card Turco vs Sauna */}
+      <section className="py-16 bg-surface2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+            {/* Card Turco vs Sauna com segunda imagem */}
+            <ScrollReveal>
+              {img2 && (
+                <div className="rounded-xl overflow-hidden mb-6">
+                  <img src={img2} alt="Banho Turco interior" className="w-full h-64 object-cover" />
+                </div>
+              )}
+              <div className="bg-white border border-borderlight rounded-2xl p-6">
+                <h3 className="text-textprimary font-semibold text-lg mb-3">Turco vs Sauna</h3>
                 <p className="text-textmuted text-sm leading-relaxed">
                   Muitas vezes confunde-se banho turco com sauna, mas a realidade é que são terapias bem diferentes.
                   O banho turco consiste em permanecer numa atmosfera saturada de vapor de água, com uma temperatura de
@@ -55,21 +87,18 @@ export default function Turcos() {
                 </p>
               </div>
             </ScrollReveal>
+
+            {/* Terceira imagem */}
+            {img3 && (
+              <ScrollReveal delay={120}>
+                <div className="rounded-xl overflow-hidden">
+                  <img src={img3} alt="Banho Turco detalhe" className="w-full h-full min-h-[300px] object-cover" />
+                </div>
+              </ScrollReveal>
+            )}
           </div>
         </div>
       </section>
-
-      {images.length > 0 && (
-        <section className="py-16 bg-surface2">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ScrollReveal className="mb-10">
-              <p className="section-eyebrow">Portfólio</p>
-              <h2 className="section-title">Galeria de Banhos Turcos</h2>
-            </ScrollReveal>
-            <GalleryGrid images={images} />
-          </div>
-        </section>
-      )}
 
       <PageCTA
         text="Interessado em instalar um banho turco? Fale connosco."
