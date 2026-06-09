@@ -15,7 +15,12 @@ const PAGE_LABELS = {
 
 function isImageField(key, value) {
   const v = String(value || '')
-  if (v.includes('/uploads/') || v.includes('localhost:3001')) return true
+  if (
+    v.includes('/uploads/') ||
+    v.includes('localhost:3001') ||
+    v.includes('/object/public/') ||
+    v.includes('supabase.co')
+  ) return true
   const k = key.toLowerCase()
   return (
     k.startsWith('imagem') ||
@@ -75,7 +80,7 @@ function SectionCard({ section, onSaved }) {
 
     // Campo de imagem — thumbnail + botão Substituir
     if (isImageField(key, strVal)) {
-      const hasUrl = strVal.includes('/uploads/')
+      const hasUrl = strVal.includes('/uploads/') || strVal.includes('/object/public/') || strVal.includes('supabase.co')
       return (
         <div key={key} className="space-y-2">
           <label className="block text-muted text-xs capitalize">{key.replace(/_/g, ' ')}</label>
