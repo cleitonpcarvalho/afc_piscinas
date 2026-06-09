@@ -26,16 +26,14 @@ export default function HeroSection() {
   ]
 
   return (
-    <section
-      className="relative min-h-screen flex items-center justify-center"
-      style={{
-        backgroundImage:      `url(${bgSrc})`,
-        backgroundSize:       'cover',
-        backgroundPosition:   'center',
-        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
-      }}
-    >
-      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)' }} />
+    <section className="relative min-h-screen flex items-center justify-center">
+      <img
+        src={bgSrc}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        style={{ zIndex: 0 }}
+      />
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)', zIndex: 1 }} />
 
       <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 text-center pt-24 pb-20">
         <span className="section-eyebrow">{eyebrow}</span>
