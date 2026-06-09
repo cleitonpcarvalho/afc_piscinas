@@ -32,7 +32,7 @@ export default function HeroSection() {
         backgroundImage:      `url(${bgSrc})`,
         backgroundSize:       'cover',
         backgroundPosition:   'center',
-        backgroundAttachment: 'fixed',
+        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
       }}
     >
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)' }} />
