@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Award, Wrench, Phone } from 'lucide-react'
 import heroBg from '../assets/pexels/hero_bg.jpg'
+import heroBgMobile from '../assets/pexels/hero_bg_mobile.jpg'
 import { useSettings } from '../hooks/useSettings'
 import { useSection } from '../contexts/ContentContext'
 
@@ -11,7 +12,8 @@ export default function HeroSection() {
   const s   = useSettings()
   const cms = useSection('hero')
 
-  const bgSrc      = cms.bg_image           || heroBg
+  const isMobile   = window.innerWidth < 768
+  const bgSrc      = isMobile ? heroBgMobile : (cms.bg_image || heroBg)
   const eyebrow    = cms.eyebrow            || 'Construção · Renovação · Manutenção'
   const heading    = cms.heading            || 'Projetamos e Construímos Piscinas'
   const subheading = cms.subheading         || 'AFC Piscinas — empresa reconhecida e especializada em construção, renovação e manutenção de piscinas, saunas, spas e banhos turcos em Portugal.'
