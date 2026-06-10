@@ -27,12 +27,23 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center">
-      <img
-        src={bgSrc}
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover object-center"
-        style={{ zIndex: 0 }}
-      />
+      <picture>
+        <source media="(max-width: 767px)" srcSet={heroBgMobile} />
+        <img
+          src={bgSrc}
+          alt=""
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            zIndex: 0
+          }}
+        />
+      </picture>
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)', zIndex: 1 }} />
 
       <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 text-center pt-24 pb-20">
